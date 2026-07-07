@@ -4,7 +4,7 @@ This repository contains the MRNI-Bias Benchmark (MRNI-BB), a bilingual English-
 
 The resource accompanies the paper:
 
-> Elisa Leonardelli, Camilla Casula, Boglarka Nyul, and Sara Tonelli. 2026. *Real Men are Tough: Evaluating Gender Bias and Sensitivity to Masculinity Norms in LLMs*. Findings of ACL 2026.
+> [Elisa Leonardelli, Camilla Casula, Boglarka Nyul, and Sara Tonelli. 2026. *Real Men are Tough: Evaluating Gender Bias and Sensitivity to Masculinity Norms in LLMs*. Findings of ACL 2026](https://aclanthology.org/2026.findings-acl.225.pdf).
 
 MRNI-BB is grounded in the revised Male Role Norms Inventory, [MRNI-R](https://doi.org/10.3149/jms.1501.83), a validated psychological framework for measuring prescriptive masculinity norms. The benchmark is designed to test not only whether models explicitly agree with masculinity-related statements, but also whether they use these norms as latent priors in scenario-based inference.
 It follows the ambiguity-based evaluation paradigm introduced by BBQ ([Parrish et al., 2022](https://aclanthology.org/2022.findings-acl.165/)), using controlled scenario variants to manipulate whether the evidence is sufficient, ambiguous, or absent; however, MRNI-BB anchors these scenarios in MRNI-R masculinity norms rather than in broad demographic stereotype categories.
