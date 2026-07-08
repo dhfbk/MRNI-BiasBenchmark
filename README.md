@@ -43,7 +43,7 @@ For each of the 49 MRNI items, we create three short scenarios, resulting in 147
 
 The benchmark can be used in two main settings:
 
-- **Gender-agnostic**: the two individuals are referred to as `Person A` and `Person B`.
+- **Gender-agnostic**: the two individuals are referred to as `person X` and `person Y`.
 - **Gender-specified**: the two individuals are referred to as `the man` and `the woman`.
 
 This design makes it possible to compare model behavior when gender information is absent, present, supported by evidence, or introduced under uncertainty.
