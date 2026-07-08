@@ -1,77 +1,72 @@
-# Italian MRNI-BB Placeholder Guide
+# Italian MRNI-BB Data
 
-This document describes the placeholder conventions used in the Italian MRNI-BB TSV files and how they should be expanded when generating LLM-ready prompts.
+This folder contains the Italian version of MRNI-BB.
 
-The goal is to keep the Italian scenarios grammatical across:
+For each MRNI-R subscale, we provide two versions of the data:
 
-- gender-agnostic versions: `Due persone, X e Y` / `Due persone, Y e X`
-- gender-specified versions: `Un uomo e una donna` / `Una donna e un uomo`
-- disambiguated, ambiguous, and control variants
-- masculine/feminine agreement
-- Italian genitive forms such as `dell'uomo`, `della donna`, `della persona X`
+1. **Compact/template files**  
+   These are the shorter and more easily inspectable files.
 
----
+2. **Expanded all-condition files**  
+   These are the fully expanded, evaluation-ready files used for model prompting.
 
-## Placeholder map 
-### Base
-| Case | Placeholder in TSV | Use when | Example in TSV | Output examples |
-|---|---|---|---|---|
-| Base pair, gender-agnostic | `{{X} e {Y}}` | In the `Base` column, when introducing two people without gender. | `{{X} e {Y}} ricevono un feedback critico.` | `Due persone, X e Y, ricevono...` / `Due persone, Y e X, ricevono...` |
-| Base pair, gender-specified | `{{X} e {Y}}` | Same base sentence, but in gender-specified conditions. | `{{X} e {Y}} ricevono un feedback critico.` | `Un uomo e una donna ricevono...` / `Una donna e un uomo ricevono...` |
-
-### Variants
-| Case | Placeholder in TSV | Use when | Example in TSV | Output examples |
-|---|---|---|---|---|
-| Variant normal subject/reference, gender-agnostic | `{X}`, `{Y}` | When X/Y are the grammatical subject or a normal explicit reference. | `{X} minimizza l'impatto emotivo. {Y} racconta di essersi sentit{Y-end} turbata.` | `L'uomo minimizza... La donna racconta...` / `La persona X minimizza...` |
-| Variant normal subject/reference, gender-specified | `{X}`, `{Y}` | When X/Y are the grammatical subject or a normal explicit reference. | `{X} minimizza l'impatto emotivo. {Y} racconta di essersi sentit{Y-end} turbata.` | `La persona X minimizza l'impatto emotivo. La persona Y racconta di essersi sentit{Y-end} turbata.` / `La persona X minimizza...` |
-
-
-### Other
-| Case | Placeholder in TSV | Use when | Example in TSV | Output examples |
-|---|---|---|---|---|
-| Agreement ending | `{X-end}`, `{Y-end}` | For adjectives or participles that must agree with X/Y. | `{X} è visibilmente emozionat{X-end}.` | `L'uomo è visibilmente emozionato.` / `La donna è visibilmente emozionata.` / `La persona X è visibilmente emozionata.` |
-| Genitive / “of” form | `{X-of}`, `{Y-of}` | When Italian needs `di + article`, especially after nouns. | `Le emozioni {Y-of} sono evidenti.` | `Le emozioni dell'uomo...` / `della donna...` / `della persona Y...` |
-| Apostrophe/genitive full form | `{X-apostrophe}`, `{Y-apostrophe}` | For cases originally requiring `dell'/della`; the placeholder itself includes the full form. | `Il volto {X-apostrophe} rimane impassibile.` | `Il volto dell'uomo...` / `Il volto della donna...` / `Il volto della persona X...` |
-| Ambiguous reference | no `{X}`/`{Y}` | - | `Una delle due persone ... L'altra persona ...` | Same text across X/Y behavior mappings; hard coded. |
-| Control variant | `{X}`, `{Y}` | In control variants, where the behavior is unrelated and gender-specified only. | `{X} chiede chiarimenti. {Y} prende appunti.` | `L'uomo chiede... La donna prende...` / reversed |
+The expanded files can be regenerated from the compact files using the provided Python script.
 
 ---
 
-## Recommended replacement values
+## Folder structure
 
-Use the following values in the Italian prompt-generation script.
-
-```python
-PERSON_X = ItalianLabel(
-    cap="La persona X",
-    lower="la persona X",
-    end="a",
-    apostrophe="della persona X",
-    of="della persona X",
-)
-
-PERSON_Y = ItalianLabel(
-    cap="La persona Y",
-    lower="la persona Y",
-    end="a",
-    apostrophe="della persona Y",
-    of="della persona Y",
-)
-
-MAN = ItalianLabel(
-    cap="L'uomo",
-    lower="l'uomo",
-    end="o",
-    apostrophe="dell'uomo",
-    of="dell'uomo",
-)
-
-WOMAN = ItalianLabel(
-    cap="La donna",
-    lower="la donna",
-    end="a",
-    apostrophe="della donna",
-    of="della donna",
-)
+```text
+IT/
+├── AF_MNRI-BB_it.tsv
+├── D_MNRI-BB_it.tsv
+├── IOS_MNRI-BB_it.tsv
+├── NTSM_MNRI-BB_it.tsv
+├── RE_MNRI-BB_it.tsv
+├── SRTMS_MNRI-BB_it.tsv
+├── T_MNRI-BB_it.tsv
+├── get_all_conditions_it.py
+├── README.md
+└── all_conditions/
+    ├── AF_MNRI-BB_it_all.tsv
+    ├── D_MNRI-BB_it_all.tsv
+    ├── IOS_MNRI-BB_it_all.tsv
+    ├── NTSM_MNRI-BB_it_all.tsv
+    ├── RE_MNRI-BB_it_all.tsv
+    ├── SRTMS_MNRI-BB_it_all.tsv
+    └── T_MNRI-BB_it_all.tsv
 ```
+## What the generation script does
 
+The script `get_all_conditions_it.py` expands the compact/template files into the full evaluation-ready files in `all_conditions/`.
+
+In particular, it:
+
+- replaces the base placeholder `{{X} e {Y}}` with all required introductions:
+  - `Due persone, X e Y`
+  - `Due persone, Y e X`
+  - `Un uomo e una donna`
+  - `Una donna e un uomo`
+
+- replaces `{X}` and `{Y}` with the appropriate labels depending on the condition:
+  - gender-agnostic: `La persona X`, `La persona Y`
+  - gender-specified: `L'uomo`, `La donna`
+
+- expands agreement placeholders such as `{X-end}` and `{Y-end}`:
+  - `o` for masculine forms, e.g. `sentito`, `scosso`
+  - `a` for feminine forms, e.g. `sentita`, `scossa`
+
+- expands genitive placeholders:
+  - `{X-of}` / `{Y-of}` → `dell'uomo`, `della donna`, `della persona X/Y`
+  - `{X-apostrophe}` / `{Y-apostrophe}` → full forms such as `dell'uomo` or `della donna`
+
+- generates all condition variants:
+  - `disambiguated_ga`
+  - `disambiguated_gs`
+  - `ambiguous_ga`
+  - `ambiguous_gs`
+  - `control_gs`
+
+- assigns the correct `gold_answer` and valid `answer_options` for each generated prompt.
+
+The compact files are therefore the source version, while the files in `all_conditions/` are the generated evaluation-ready version.    
