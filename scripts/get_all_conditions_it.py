@@ -27,6 +27,7 @@ class ItalianLabel:
     end: str
     apostrophe: str
     of: str
+    ind_pron: str
 
 
 PERSON_X = ItalianLabel(
@@ -35,6 +36,7 @@ PERSON_X = ItalianLabel(
     end="a",
     apostrophe="della persona X",
     of="della persona X",
+    ind_pron="le",
 )
 
 PERSON_Y = ItalianLabel(
@@ -43,6 +45,7 @@ PERSON_Y = ItalianLabel(
     end="a",
     apostrophe="della persona Y",
     of="della persona Y",
+    ind_pron="le",
 )
 
 MAN = ItalianLabel(
@@ -51,6 +54,7 @@ MAN = ItalianLabel(
     end="o",
     apostrophe="dell'uomo",
     of="dell'uomo",
+    ind_pron="gli",
 )
 
 WOMAN = ItalianLabel(
@@ -59,6 +63,7 @@ WOMAN = ItalianLabel(
     end="a",
     apostrophe="della donna",
     of="della donna",
+    ind_pron="le",
 )
 
 
@@ -115,6 +120,10 @@ def replace_placeholders(text: str, x: ItalianLabel, y: ItalianLabel) -> str:
 
     text = text.replace("{X-of}", x.of)
     text = text.replace("{Y-of}", y.of)
+
+    # Pronomi indiretti: GA = le; GS = gli (uomo) / le (donna).
+    text = text.replace("{X-ind-pron}", x.ind_pron)
+    text = text.replace("{Y-ind-pron}", y.ind_pron)
 
     labels = {"X": x, "Y": y}
 
@@ -374,7 +383,10 @@ def parse_args() -> argparse.Namespace:
         "--output",
         type=Path,
         default=None,
-        help="Output TSV path. Defaults to <input_stem>_full_conditions.tsv.",
+        help=(
+            "Output TSV path. Defaults to expanded/"
+            "<input_stem>_full_conditions.tsv."
+        ),
     )
     parser.add_argument(
         "--conditions",
@@ -400,8 +412,10 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    output = args.output or args.input.with_name(
-        f"{args.input.stem}_full_conditions.tsv"
+    output = args.output or (
+        args.input.parent
+        / "expanded"
+        / f"{args.input.stem}_full_conditions.tsv"
     )
 
     df = pd.read_csv(args.input, sep="\t")
@@ -426,6 +440,7 @@ def main() -> None:
         assume_disambiguated_gold=args.assume_disambiguated_gold,
     )
 
+    output.parent.mkdir(parents=True, exist_ok=True)
     expanded.to_csv(output, sep="\t", index=False)
 
     print(f"Wrote {len(expanded)} rows to {output}")

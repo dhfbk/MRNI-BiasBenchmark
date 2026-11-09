@@ -187,7 +187,7 @@ def replace_placeholders(text: str, x: EnglishLabel, y: EnglishLabel) -> str:
 
     # Safety net for older templates where neutral pronouns were hard-coded
     # instead of written with pronoun placeholders.
-    text = fix_legacy_pronouns(text, x, y)
+    #text = fix_legacy_pronouns(text, x, y)
 
     return clean(text)
 
@@ -437,7 +437,10 @@ def parse_args() -> argparse.Namespace:
         "--output",
         type=Path,
         default=None,
-        help="Output TSV path. Defaults to <input_stem>_full_conditions.tsv.",
+        help=(
+            "Output TSV path. Defaults to expanded_conditions/"
+            "<input_stem>_full_conditions.tsv."
+        ),
     )
     parser.add_argument(
         "--conditions",
@@ -463,8 +466,10 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    output = args.output or args.input.with_name(
-        f"{args.input.stem}_full_conditions.tsv"
+    output = args.output or (
+        args.input.parent
+        / "expanded_conditions"
+        / f"{args.input.stem}_full_conditions.tsv"
     )
 
     df = pd.read_csv(args.input, sep="\t")
@@ -489,6 +494,7 @@ def main() -> None:
         assume_disambiguated_gold=args.assume_disambiguated_gold,
     )
 
+    output.parent.mkdir(parents=True, exist_ok=True)
     expanded.to_csv(output, sep="\t", index=False)
 
     print(f"Wrote {len(expanded)} rows to {output}")
