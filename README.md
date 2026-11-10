@@ -6,6 +6,7 @@ The resource accompanies the paper:
 
 > [Elisa Leonardelli, Camilla Casula, Boglarka Nyul, and Sara Tonelli. 2026. *Real Men are Tough: Evaluating Gender Bias and Sensitivity to Masculinity Norms in LLMs*. Findings of ACL 2026](https://aclanthology.org/2026.findings-acl.225.pdf).
 
+[Dataset on Hugging Face](https://huggingface.co/datasets/dhfbk/MRNI-BiasBenchmark)
 ---
 
 ## The MRNI-R framework
